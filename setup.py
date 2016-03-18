@@ -18,15 +18,15 @@ import distutils.core
 from piplapis import __version__
 
 
-py_version = sys.version_info[:2]
-if py_version not in [(2, 6), (2, 7)]:
-    raise RuntimeError('Python 2.6 or 2.7 is required')
+py_version = sys.version_info[0]
+if py_version < 3:
+    raise RuntimeError('Python 3 or greater is required')
 
 
-distutils.core.setup(name='piplapis-python',
+distutils.core.setup(name='piplapis-python3',
                      version=__version__,
-                     author="Josh Liberty",
-                     author_email="josh.liberty@pipl.com",
+                     author="Waqar Ahmed",
+                     author_email="waqaraqeel@live.com",
                      description="Client library for use with the Pipl search API",
                      url="https://pipl.com/dev",
                      license="http://www.apache.org/licenses/LICENSE-2.0",
@@ -34,7 +34,7 @@ distutils.core.setup(name='piplapis-python',
                          "Intended Audience :: Developers",
                          "Operating System :: OS Independent",
                          "Programming Language :: Python",
-                         "Programming Language :: Python :: 2",
+                         "Programming Language :: Python :: 3",
                      ],
                      packages=['piplapis', 'piplapis.data'],
                      )
