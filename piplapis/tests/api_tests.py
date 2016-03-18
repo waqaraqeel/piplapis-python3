@@ -1,12 +1,11 @@
-import json
 import logging
 import os
-from piplapis.data import Person, Email, Name, URL, Username, UserID, Image, Phone, Address, OriginCountry, Language, \
-    DOB, Gender
-from piplapis.data.containers import Relationship
-from piplapis.search import SearchAPIRequest
 from unittest import TestCase
 
+from piplapis.data import Person, Email, Name, URL, Username, UserID, Image, Phone, Address, OriginCountry, Language, \
+    DOB, Gender, Job, Education
+from piplapis.data.containers import Relationship
+from piplapis.search import SearchAPIRequest
 
 # Tests for the pipl API using the python client library
 # These tests expect two environment variables to be set:
@@ -106,10 +105,11 @@ class APITests(TestCase):
     def test_contact_datatypes_are_as_expected(self):
         SearchAPIRequest.BASE_URL = os.getenv("API_TESTS_BASE_URL") + "?developer_class=contact"
         response = self.get_narrow_search_request().send()
-        available_data_types = {Name, Gender, DOB, Language, OriginCountry, Address, Phone}
+        available_data_types = {Name, Gender, DOB, Language, OriginCountry, Address, Phone, Email, Job, Education,
+                                Image, Language, Username, UserID, URL, Relationship}
         for field in response.person.all_fields:
             if type(field) == Email:
-                self.assertEqual(field.address, 'full.email.available@business.subscription')
+                self.assertEqual(field.address, 'full.email.available@professional.or.premium.subscription')
             else:
                 self.assertIn(type(field), available_data_types)
 
@@ -117,10 +117,10 @@ class APITests(TestCase):
         SearchAPIRequest.BASE_URL = os.getenv("API_TESTS_BASE_URL") + "?developer_class=social"
         response = self.get_narrow_search_request().send()
         available_data_types = {Name, Gender, DOB, Language, OriginCountry, Address, Phone, Username, UserID, Image,
-                                Relationship, URL}
+                                Relationship, URL, Education, Job, Email}
         for field in response.person.all_fields:
             if type(field) == Email:
-                self.assertEqual(field.address, 'full.email.available@business.subscription')
+                self.assertEqual(field.address, 'full.email.available@professional.or.premium.subscription')
             else:
                 self.assertIn(type(field), available_data_types)
 
@@ -138,37 +138,3 @@ class APITests(TestCase):
         except Exception as e:
             failed = True
         self.assertTrue(failed)
-
-    def test_make_sure_field_count_is_correct_on_premium(self):
-        res = self.get_narrow_search_request().send()
-        self.assertEqual(res.available_data.premium.relationships, 8)
-        self.assertEqual(res.available_data.premium.usernames, 2)
-        self.assertEqual(res.available_data.premium.jobs, 13)
-        self.assertEqual(res.available_data.premium.addresses, 9)
-        self.assertEqual(res.available_data.premium.phones, 4)
-        self.assertEqual(res.available_data.premium.emails, 4)
-        self.assertEqual(res.available_data.premium.languages, 1)
-        self.assertEqual(res.available_data.premium.names, 1)
-        self.assertEqual(res.available_data.premium.dobs, 1)
-        self.assertEqual(res.available_data.premium.images, 2)
-        self.assertEqual(res.available_data.premium.genders, 1)
-        self.assertEqual(res.available_data.premium.educations, 2)
-        self.assertEqual(res.available_data.premium.social_profiles, 5)
-
-    def test_make_sure_field_count_is_correct_on_basic(self):
-        SearchAPIRequest.BASE_URL = os.getenv("API_TESTS_BASE_URL") + "?developer_class=social"
-        res = self.get_narrow_search_request().send()
-        self.assertEqual(res.available_data.basic.relationships, 7)
-        self.assertEqual(res.available_data.basic.usernames, 2)
-        self.assertEqual(res.available_data.basic.jobs, 12)
-        self.assertEqual(res.available_data.basic.addresses, 6)
-        self.assertEqual(res.available_data.basic.phones, 1)
-        self.assertEqual(res.available_data.basic.emails, 3)
-        self.assertEqual(res.available_data.basic.user_ids, 4)
-        self.assertEqual(res.available_data.basic.languages, 1)
-        self.assertEqual(res.available_data.basic.names, 1)
-        self.assertEqual(res.available_data.basic.dobs, 1)
-        self.assertEqual(res.available_data.basic.images, 2)
-        self.assertEqual(res.available_data.basic.genders, 1)
-        self.assertEqual(res.available_data.basic.educations, 2)
-        self.assertEqual(res.available_data.basic.social_profiles, 3)

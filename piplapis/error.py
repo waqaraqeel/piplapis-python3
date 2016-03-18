@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from piplapis.data.utils import Serializable
 
 

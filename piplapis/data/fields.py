@@ -1,6 +1,5 @@
 import logging
-import urlparse
-from urllib import urlencode
+import urllib
 
 from piplapis.data.utils import *
 
@@ -49,11 +48,6 @@ class Field(Serializable):
         u'clark'
         
         """
-        if isinstance(value, str):
-            try:
-                value = value.decode('utf8')
-            except UnicodeDecodeError:
-                raise ValueError('Tried to assign a non utf8 string to ' + attr)
         if attr == 'type':
             try:
                 self.validate_type(value)
@@ -110,7 +104,7 @@ class Field(Serializable):
         :param d: dict, the dictionary to create a Field from.
         """
         kwargs = {}
-        for key, val in d.iteritems():
+        for key, val in d.items():
             if key.startswith('@'):
                 key = key[1:]
             if key == 'type':
@@ -121,7 +115,7 @@ class Field(Serializable):
                 val = str_to_datetime(val)
             elif key == 'date_range':
                 val = DateRange.from_dict(val)
-            kwargs[key.encode('ascii')] = val
+            kwargs[key] = val
         return cls(**kwargs)
 
     def to_dict(self):
@@ -136,7 +130,7 @@ class Field(Serializable):
                     value = date_to_str(value)
                 if isinstance(value, datetime.datetime):
                     value = datetime_to_str(value)
-                if value or isinstance(value, (bool, int, long)):
+                if value or isinstance(value, (bool, int)):
                     d[prefix + attr] = value
         if hasattr(self, 'display') and self.display:
             d['display'] = self.display
@@ -572,7 +566,7 @@ class Image(Field):
 
         thumb_url_base = "{}://thumb.pipl.com/image?".format("https" if use_https else "http")
         params = {"height": height, "width": width, "favicon": favicon, "zoom_face": zoom_face}
-        return thumb_url_base + urlencode(params) + "&tokens=" + tokens
+        return thumb_url_base + urllib.parse.urlencode(params) + "&tokens=" + tokens
 
     @property
     def display(self):

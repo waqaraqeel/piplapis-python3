@@ -65,7 +65,7 @@ class FieldsContainer(object):
         """
         class_container = cls.class_container
         fields = [field_cls.from_dict(field_dict)
-                  for field_cls, container in class_container.iteritems()
+                  for field_cls, container in class_container.items()
                   for field_dict in d.get(container, [])]
         for field_cls, attr_name in cls.singular_fields.items():
             if attr_name in d:
@@ -394,15 +394,15 @@ class Person(Serializable, FieldsContainer):
         invalid etc.
         
         """
-        filter_func = lambda field: not field.is_searchable
-        return (filter(filter_func, self.names) +
-                filter(filter_func, self.emails) +
-                filter(filter_func, self.phones) +
-                filter(filter_func, self.usernames) +
-                filter(filter_func, self.user_ids) +
-                filter(filter_func, self.urls) +
-                filter(filter_func, self.addresses) +
-                filter(filter_func, [x for x in [self.dob] if x]))
+        return [field for field in (self.names +
+                                    self.emails +
+                                    self.phones +
+                                    self.usernames +
+                                    self.user_ids +
+                                    self.urls +
+                                    self.addresses +
+                                    [x for x in [self.dob] if x]
+                                ) if not field.is_searchable]
 
     @classmethod
     def from_dict(cls, d):

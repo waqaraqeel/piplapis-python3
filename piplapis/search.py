@@ -13,8 +13,13 @@ The classes are based on the person data-model that's implemented here in the
 sub-package piplapis.data.
 
 """
-import urllib
-import urllib2
+from __future__ import unicode_literals
+from future import standard_library
+standard_library.install_aliases()
+from past.builtins import basestring
+from builtins import object
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
 import itertools
 import threading
 
@@ -237,7 +242,7 @@ class SearchAPIRequest(object):
     def url(self):
         """The URL of the request (str)."""
         query = self.get_search_query()
-        return self.get_base_url() + urllib.urlencode(query, doseq=True)
+        return self.get_base_url() + urllib.parse.urlencode(query, doseq=True)
 
     def get_search_query(self):
         query = {"key": self.api_key}
@@ -287,12 +292,12 @@ class SearchAPIRequest(object):
         self.validate_query_params(strict=strict_validation)
 
         query = self.get_search_query()
-        request = urllib2.Request(url=self.get_base_url(), data=urllib.urlencode(query, True),
+        request = urllib.request.Request(url=self.get_base_url(), data=urllib.parse.urlencode(query, True).encode(),
                                   headers=SearchAPIRequest.HEADERS)
         try:
-            json_response = urllib2.urlopen(request).read()
-        except urllib2.HTTPError as e:
-            json_error = e.read()
+            json_response = urllib.request.urlopen(request).read().decode()
+        except urllib.error.HTTPError as e:
+            json_error = e.read().decode()
             if not json_error:
                 raise e
             try:
